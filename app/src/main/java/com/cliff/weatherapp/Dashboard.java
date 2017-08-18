@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
+import android.location.LocationListener;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -51,46 +53,51 @@ public class Dashboard extends AppCompatActivity {
         vProgressLayer = (RelativeLayout) findViewById(R.id.progressLayer);
 
         locationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
-        requestQueue = Volley.newRequestQueue(this);
+
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                fetchLocationData(location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+// Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
         if (!netAndGpsEnabled()) {
-            Log.d(TAG, "Connection off");
             showSettingsAlert();
         } else {
-            Log.d(TAG, "Connection on");
-            Location myLocation = getLastKnownLocation();
-            lat = Double.toString(myLocation.getLatitude());
-            lon = Double.toString(myLocation.getLongitude());
-            Log.d(TAG,"DAta: "+myLocation);
-            fetchLocationData();
+            Log.d(TAG, "GPS on");
+            //lat = "-1.26324";
+            //lon = "36.3424";
         }
     }
 
     private boolean netAndGpsEnabled(){
+        requestQueue = Volley.newRequestQueue(this);
+
         boolean isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        return (isGPS && isNetwork);
-    }
-
-    private Location getLastKnownLocation() {
-        List<String> providers = locationManager.getProviders(true);
-        Location bestLocation = null;
-
-        for (String provider : providers) {
-            Location l = locationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
-            }
-            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
-                // Found best last known location: %s", l);
-                bestLocation = l;
-            }
+        if(!isGPS && !isNetwork){
+            return false;
         }
-
-        return bestLocation;
+        else{
+            return true;
+        }
     }
 
-    public void fetchLocationData(){
+    public void fetchLocationData(Location myLocation){
+        Log.d(TAG, "got new location update");
+
+        lat = Double.toString(myLocation.getLatitude());
+        lon = Double.toString(myLocation.getLongitude());
+        Log.d(TAG, "DAta: " + myLocation);
+
         String url = "https://fcc-weather-api.glitch.me/api/current?lat="+lat+"&lon="+lon;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -124,6 +131,7 @@ public class Dashboard extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "Something went wrong: "+error);
+                        Toast.makeText(getApplicationContext(), "check your internet connection", Toast.LENGTH_LONG).show();
                     }
                 });
 
@@ -136,10 +144,12 @@ public class Dashboard extends AppCompatActivity {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("GPS is not Enabled!");
         alertDialog.setMessage("Do you want to turn on GPS?");
+
         alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(intent);
+                finish();
             }
         });
 
