@@ -29,8 +29,6 @@ import java.util.List;
 
 public class Dashboard extends AppCompatActivity {
 
-    boolean isGPS = false;
-    boolean isNetwork = false;
     String lat, lon;
     final String TAG = "GPS";
 
@@ -53,24 +51,25 @@ public class Dashboard extends AppCompatActivity {
         vProgressLayer = (RelativeLayout) findViewById(R.id.progressLayer);
 
         locationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
-        isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        isNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         requestQueue = Volley.newRequestQueue(this);
 
-        if (!isGPS && !isNetwork) {
+        if (!netAndGpsEnabled()) {
             Log.d(TAG, "Connection off");
             showSettingsAlert();
-            //getLastLocation();
         } else {
             Log.d(TAG, "Connection on");
-            // check permissions
-            // get location
             Location myLocation = getLastKnownLocation();
             lat = Double.toString(myLocation.getLatitude());
             lon = Double.toString(myLocation.getLongitude());
             Log.d(TAG,"DAta: "+myLocation);
             fetchLocationData();
         }
+    }
+
+    private boolean netAndGpsEnabled(){
+        boolean isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        boolean isNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        return (isGPS && isNetwork);
     }
 
     private Location getLastKnownLocation() {
@@ -147,6 +146,7 @@ public class Dashboard extends AppCompatActivity {
         alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
+                finish();
             }
         });
 
