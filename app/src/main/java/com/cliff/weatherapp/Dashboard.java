@@ -3,11 +3,15 @@ package com.cliff.weatherapp;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +31,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.List;
+import android.Manifest;
 
 public class Dashboard extends AppCompatActivity {
 
@@ -38,6 +42,7 @@ public class Dashboard extends AppCompatActivity {
     TextView tvLatitude, tvLongitude, tvWeather, tvDate, tvTemp_c, tvTemp_f;
     RelativeLayout vProgressLayer;
     RequestQueue requestQueue;
+    public static final Integer MY_PERMISSIONS_REQUEST_LOCATION = 0x5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +71,48 @@ public class Dashboard extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-// Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+    // Register the listener with the Location Manager to receive location updates
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+            }
+        }
+
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0, locationListener);
 
         if (!netAndGpsEnabled()) {
             showSettingsAlert();
         } else {
             Log.d(TAG, "GPS on");
-            //lat = "-1.26324";
-            //lon = "36.3424";
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 0x5: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
         }
     }
 
