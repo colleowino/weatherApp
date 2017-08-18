@@ -27,6 +27,7 @@
             android:text="Weather"/>
 
         <TextView
+            android:id="@+id/tvWeather"
             android:layout_marginTop="@dimen/status_item_text_gap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -59,6 +60,7 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/tvTemp_c"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="20.3 F"
@@ -66,6 +68,7 @@
                 android:textSize="19sp" />
 
             <TextView
+                android:id="@+id/tvTemp_f"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/status_degree_gap"
@@ -94,6 +97,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/status_item_text_gap"
@@ -120,6 +124,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvLongitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/status_item_text_gap"
@@ -146,6 +151,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvLatitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/status_item_text_gap"
