@@ -74,28 +74,32 @@ public class Dashboard extends AppCompatActivity {
     // Register the listener with the Location Manager to receive location updates
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,e
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
             } else {
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
             }
+        } else{
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
+
+            if (!netAndGpsEnabled()) {
+                showSettingsAlert();
+            } else {
+                Log.d(TAG, "GPS on");
+            }
         }
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0, locationListener);
-
-        if (!netAndGpsEnabled()) {
-            showSettingsAlert();
-        } else {
-            Log.d(TAG, "GPS on");
-        }
     }
 
     @Override
@@ -117,7 +121,6 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private boolean netAndGpsEnabled(){
-        requestQueue = Volley.newRequestQueue(this);
 
         boolean isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
@@ -130,6 +133,8 @@ public class Dashboard extends AppCompatActivity {
     }
 
     public void fetchLocationData(Location myLocation){
+        requestQueue = Volley.newRequestQueue(this);
+
         Log.d(TAG, "got new location update");
 
         lat = Double.toString(myLocation.getLatitude());
@@ -143,7 +148,6 @@ public class Dashboard extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d(TAG,"DAta: "+response);
-
                         try {
                             String locationTemp = response.getJSONObject("main").getString("temp");
                             String locationWeather = response.getJSONArray("weather").getJSONObject(0).getString("main");
@@ -158,11 +162,11 @@ public class Dashboard extends AppCompatActivity {
                             tvLongitude.setText(lon);
                             tvDate.setText(currentDateTimeString);
                             vProgressLayer.setVisibility(View.GONE);
-
                         } catch (JSONException e) {
                             //some exception handler code.
                             Log.d(TAG, "error occured: "+e);
                         }
+
                     }
                 },
                 new Response.ErrorListener() {
