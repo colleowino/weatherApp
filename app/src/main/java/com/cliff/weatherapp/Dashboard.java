@@ -39,7 +39,7 @@ public class Dashboard extends AppCompatActivity {
     final String TAG = "GPS";
 
     LocationManager locationManager;
-    TextView tvLatitude, tvLongitude, tvWeather, tvDate, tvTemp_c, tvTemp_f;
+    TextView tvCity, tvLatitude, tvLongitude, tvWeather, tvDate, tvTemp_c, tvTemp_f;
     RelativeLayout vProgressLayer;
     RequestQueue requestQueue;
     public static final Integer MY_PERMISSIONS_REQUEST_LOCATION = 0x5;
@@ -49,6 +49,7 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tvCity = (TextView) findViewById(R.id.tvCity);
         tvLatitude = (TextView) findViewById(R.id.tvLatitude);
         tvLongitude = (TextView) findViewById(R.id.tvLongitude);
         tvWeather = (TextView) findViewById(R.id.tvWeather);
@@ -59,6 +60,32 @@ public class Dashboard extends AppCompatActivity {
 
         locationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
 
+
+    // Register the listener with the Location Manager to receive location updates
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+            }
+        } else{
+            setupListeners();
+        }
+
+    }
+
+    public void setupListeners(){
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 fetchLocationData(location);
@@ -71,33 +98,13 @@ public class Dashboard extends AppCompatActivity {
             public void onProviderDisabled(String provider) {}
         };
 
-    // Register the listener with the Location Manager to receive location updates
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,e
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-            }
-        } else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
-
-            if (!netAndGpsEnabled()) {
-                showSettingsAlert();
-            } else {
-                Log.d(TAG, "GPS on");
-            }
+        if (!netAndGpsEnabled()) {
+            showSettingsAlert();
+        } else {
+            Log.d(TAG, "GPS on");
         }
 
     }
@@ -110,6 +117,7 @@ public class Dashboard extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    setupListeners();
                 } else {
 
                     // permission denied, boo! Disable the
@@ -150,6 +158,8 @@ public class Dashboard extends AppCompatActivity {
                         Log.d(TAG,"DAta: "+response);
                         try {
                             String locationTemp = response.getJSONObject("main").getString("temp");
+                            String country = response.getJSONObject("sys").getString("country");
+                            String place = response.getString("name") + ", "+ country;
                             String locationWeather = response.getJSONArray("weather").getJSONObject(0).getString("main");
 
                             String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
@@ -161,6 +171,7 @@ public class Dashboard extends AppCompatActivity {
                             tvLatitude.setText(lat);
                             tvLongitude.setText(lon);
                             tvDate.setText(currentDateTimeString);
+                            tvCity.setText(place);
                             vProgressLayer.setVisibility(View.GONE);
                         } catch (JSONException e) {
                             //some exception handler code.
@@ -191,7 +202,6 @@ public class Dashboard extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(intent);
-                finish();
             }
         });
 
