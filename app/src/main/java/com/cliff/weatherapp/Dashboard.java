@@ -31,6 +31,7 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
+
 import android.Manifest;
 
 public class Dashboard extends AppCompatActivity {
@@ -58,10 +59,10 @@ public class Dashboard extends AppCompatActivity {
         tvTemp_f = (TextView) findViewById(R.id.tvTemp_f);
         vProgressLayer = (RelativeLayout) findViewById(R.id.progressLayer);
 
-        locationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
 
 
-    // Register the listener with the Location Manager to receive location updates
+        // Register the listener with the Location Manager to receive location updates
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
@@ -76,28 +77,41 @@ public class Dashboard extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
+                // permission denied, boo! Disable the
+                // functionality that depends on this permission.
             }
-        } else{
+        } else {
             setupListeners();
         }
 
     }
 
-    public void setupListeners(){
+    public void setupListeners() {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 fetchLocationData(location);
             }
 
-            public void onStatusChanged(String provider, int status, Bundle extras) {}
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
 
-            public void onProviderEnabled(String provider) {}
+            public void onProviderEnabled(String provider) {
+            }
 
-            public void onProviderDisabled(String provider) {}
+            public void onProviderDisabled(String provider) {
+            }
         };
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
 
