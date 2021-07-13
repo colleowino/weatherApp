@@ -1,7 +1,6 @@
 package com.cliff.weatherapp;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -9,10 +8,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -21,13 +22,11 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -50,17 +49,16 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvCity = (TextView) findViewById(R.id.tvCity);
-        tvLatitude = (TextView) findViewById(R.id.tvLatitude);
-        tvLongitude = (TextView) findViewById(R.id.tvLongitude);
-        tvWeather = (TextView) findViewById(R.id.tvWeather);
-        tvDate = (TextView) findViewById(R.id.tvDate);
-        tvTemp_c = (TextView) findViewById(R.id.tvTemp_c);
-        tvTemp_f = (TextView) findViewById(R.id.tvTemp_f);
-        vProgressLayer = (RelativeLayout) findViewById(R.id.progressLayer);
+        tvCity = findViewById(R.id.tvCity);
+        tvLatitude = findViewById(R.id.tvLatitude);
+        tvLongitude = findViewById(R.id.tvLongitude);
+        tvWeather = findViewById(R.id.tvWeather);
+        tvDate = findViewById(R.id.tvDate);
+        tvTemp_c = findViewById(R.id.tvTemp_c);
+        tvTemp_f = findViewById(R.id.tvTemp_f);
+        vProgressLayer = findViewById(R.id.progressLayer);
 
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-
 
         // Register the listener with the Location Manager to receive location updates
         if (ContextCompat.checkSelfPermission(this,
@@ -70,9 +68,8 @@ public class Dashboard extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
 
             // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else {
 
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -90,9 +87,6 @@ public class Dashboard extends AppCompatActivity {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 fetchLocationData(location);
-            }
-
-            public void onStatusChanged(String provider, int status, Bundle extras) {
             }
 
             public void onProviderEnabled(String provider) {
@@ -124,20 +118,12 @@ public class Dashboard extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 0x5: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setupListeners();
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode == 0x5) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupListeners();
             }
         }
     }
@@ -146,12 +132,7 @@ public class Dashboard extends AppCompatActivity {
 
         boolean isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        if(!isGPS && !isNetwork){
-            return false;
-        }
-        else{
-            return true;
-        }
+            return (isGPS && isNetwork);
     }
 
     public void fetchLocationData(Location myLocation){
@@ -165,41 +146,37 @@ public class Dashboard extends AppCompatActivity {
 
         String url = "https://fcc-weather-api.glitch.me/api/current?lat="+lat+"&lon="+lon;
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG,"DAta: "+response);
-                        try {
-                            String locationTemp = response.getJSONObject("main").getString("temp");
-                            String country = response.getJSONObject("sys").getString("country");
-                            String place = response.getString("name") + ", "+ country;
-                            String locationWeather = response.getJSONArray("weather").getJSONObject(0).getString("main");
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    Log.d(TAG,"DAta: "+response);
+                    try {
+                        String locationTemp = response.getJSONObject("main").getString("temp");
+                        String country = response.getJSONObject("sys").getString("country");
+                        String place = response.getString("name") + ", "+ country;
+                        String locationWeather = response.getJSONArray("weather").getJSONObject(0).getString("main");
 
-                            String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+                        String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 
-                            tvWeather.setText(locationWeather);
-                            tvTemp_c.setText(locationTemp + " \u2103");
-                            Double fahrenheit = Double.valueOf(locationTemp)*1.8 + 32;
-                            tvTemp_f.setText(fahrenheit + " \u2109");
-                            tvLatitude.setText(lat);
-                            tvLongitude.setText(lon);
-                            tvDate.setText(currentDateTimeString);
-                            tvCity.setText(place);
-                            vProgressLayer.setVisibility(View.GONE);
-                        } catch (JSONException e) {
-                            //some exception handler code.
-                            Log.d(TAG, "error occured: "+e);
-                        }
-
+                        tvWeather.setText(locationWeather);
+                        tvTemp_c.setText(String.format("%s ℃", locationTemp));
+                        Double fahrenheit = Double.parseDouble(locationTemp)*1.8 + 32;
+                        tvTemp_f.setText(String.format("%s ℉", fahrenheit));
+                        tvLatitude.setText(lat);
+                        tvLongitude.setText(lon);
+                        tvDate.setText(currentDateTimeString);
+                        tvCity.setText(place);
+                        vProgressLayer.setVisibility(View.GONE);
+                    } catch (JSONException e) {
+                        //some exception handler code.
+                        Log.d(TAG, "error occurred: "+e);
                     }
+
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "Something went wrong: "+error);
-                        Toast.makeText(getApplicationContext(), "check your internet connection", Toast.LENGTH_LONG).show();
-                    }
+                error -> {
+                    Log.e(TAG, "Something went wrong: "+error);
+                    Toast.makeText(getApplicationContext(), "check your internet connection", Toast.LENGTH_LONG).show();
                 });
 
         //add request to queue
@@ -212,23 +189,16 @@ public class Dashboard extends AppCompatActivity {
         alertDialog.setTitle("GPS is not Enabled!");
         alertDialog.setMessage("Do you want to turn on GPS?");
 
-        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
+        alertDialog.setPositiveButton("Yes", (dialog, which) -> {
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
         });
 
-        alertDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                finish();
-            }
+        alertDialog.setNegativeButton("No", (dialog, which) -> {
+            dialog.cancel();
+            finish();
         });
 
         alertDialog.show();
     }
-
-
-
 }
