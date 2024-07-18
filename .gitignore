@@ -83,3 +83,9 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
+
+# mac
+.DS_Store
+
+# android studio
+other.xml

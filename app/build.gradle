@@ -3,14 +3,14 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
     }
-    compileSdkVersion 35
     defaultConfig {
         applicationId "com.cliff.weatherapp"
         minSdkVersion 15
         targetSdkVersion 35
-        versionCode 3
-        versionName "1.3"
+        versionCode 4
+        versionName "1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        compileSdk 35
     }
     buildTypes {
         release {
