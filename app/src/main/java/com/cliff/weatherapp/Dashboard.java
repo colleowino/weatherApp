@@ -163,7 +163,7 @@ public class Dashboard extends AppCompatActivity {
                         tvWeather.setText(locationWeather);
                         tvTemp_f.setText(String.format("%s ℃", locationTemp));
                         Double fahrenheit = Double.parseDouble(locationTemp)*1.8 + 32;
-                        tvTemp_c.setText(String.format("%s ℉", fahrenheit));
+                        tvTemp_c.setText(String.format("%.2f ℉", fahrenheit));
                         tvLatitude.setText(lat);
                         tvLongitude.setText(lon);
                         tvDate.setText(currentDateTimeString);
