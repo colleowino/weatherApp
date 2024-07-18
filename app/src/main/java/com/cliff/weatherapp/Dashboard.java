@@ -27,6 +27,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -144,13 +145,13 @@ public class Dashboard extends AppCompatActivity {
         lon = Double.toString(myLocation.getLongitude());
         Log.d(TAG, "DAta: " + myLocation);
 
-        String url = "https://fcc-weather-api.glitch.me/api/current?lat="+lat+"&lon="+lon;
+        String url = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&units=metric&appid=80f3988e0e381340a6afc9c616f390d7";
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url,
                 null,
                 response -> {
-                    Log.d(TAG,"DAta: "+response);
+                    Log.d(TAG,"Data: "+response);
                     try {
                         String locationTemp = response.getJSONObject("main").getString("temp");
                         String country = response.getJSONObject("sys").getString("country");
@@ -160,9 +161,9 @@ public class Dashboard extends AppCompatActivity {
                         String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 
                         tvWeather.setText(locationWeather);
-                        tvTemp_c.setText(String.format("%s ℃", locationTemp));
+                        tvTemp_f.setText(String.format("%s ℃", locationTemp));
                         Double fahrenheit = Double.parseDouble(locationTemp)*1.8 + 32;
-                        tvTemp_f.setText(String.format("%s ℉", fahrenheit));
+                        tvTemp_c.setText(String.format("%s ℉", fahrenheit));
                         tvLatitude.setText(lat);
                         tvLongitude.setText(lon);
                         tvDate.setText(currentDateTimeString);

@@ -25,7 +25,7 @@
             android:textColor="#ffffff"
             android:textStyle="bold"
             android:textSize="20sp"
-            android:text="Weather"/>
+            android:text="@string/weather"/>
 
         <TextView
             android:id="@+id/tvWeather"
@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:textColor="#ffffff"
             android:textSize="19sp"
-            android:text="Cloudy"/>
+            android:text="@string/cloudy"/>
 
     </LinearLayout>
 
@@ -49,7 +49,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Temperature"
+            android:text="@string/temperature"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:layout_marginBottom="@dimen/status_item_text_gap"
@@ -64,7 +64,7 @@
                 android:id="@+id/tvTemp_c"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="20.3 F"
+                android:text="@string/temp_f"
                 android:textColor="#ffffff"
                 android:textSize="19sp" />
 
@@ -73,7 +73,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/status_degree_gap"
-                android:text="11 C"
+                android:layout_marginStart="@dimen/status_degree_gap"
+                android:text="@string/temp_c"
                 android:textColor="#ffffff"
                 android:textSize="19sp" />
         </LinearLayout>
@@ -92,7 +93,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date"
+            android:text="@string/date"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -102,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/status_item_text_gap"
-            android:text="Fri Aug 18, 12:50 PM"
+            android:text="@string/fri_aug_24_12_50_pm"
             android:textColor="#ffffff"
             android:textSize="19sp" />
 
@@ -119,7 +120,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Longitude"
+            android:text="@string/longitude"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -129,7 +130,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/status_item_text_gap"
-            android:text="36.3124124"
+            android:text="@string/_36_3124124"
             android:textColor="#ffffff"
             android:textSize="19sp" />
 
@@ -146,7 +147,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Latitude"
+            android:text="@string/latitude"
             android:textColor="#ffffff"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -156,7 +157,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/status_item_text_gap"
-            android:text="-1.231241"
+            android:text="@string/long_txt"
             android:textColor="#ffffff"
             android:textSize="19sp" />
 

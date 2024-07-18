@@ -3,12 +3,11 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
     }
-    compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    compileSdkVersion 35
     defaultConfig {
         applicationId "com.cliff.weatherapp"
         minSdkVersion 15
-        targetSdkVersion 30
+        targetSdkVersion 35
         versionCode 3
         versionName "1.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -19,6 +18,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.cliff.weatherapp'
 }
 
 dependencies {
