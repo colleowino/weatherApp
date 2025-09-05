@@ -1,16 +1,17 @@
-apply plugin: 'com.android.application'
-
+plugins {
+    id("com.android.application")
+}
 android {
     signingConfigs {
     }
     defaultConfig {
         applicationId "com.cliff.weatherapp"
         minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 4
-        versionName "1.5"
+        targetSdkVersion 36
+        versionCode 6
+        versionName "1.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        compileSdk 35
+        compileSdkVersion 36
     }
     buildTypes {
         release {
@@ -26,12 +27,12 @@ dependencies {
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestImplementation 'androidx.test:core:1.6.1'
-    androidTestImplementation 'androidx.test:runner:1.6.2'
-    androidTestImplementation 'androidx.test:rules:1.6.1'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    androidTestImplementation 'androidx.test:core:1.7.0'
+    androidTestImplementation 'androidx.test:runner:1.7.0'
+    androidTestImplementation 'androidx.test:rules:1.7.0'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'com.google.android.material:material:1.13.0'
     implementation 'com.android.volley:volley:1.2.1'
     testImplementation 'junit:junit:4.13.2'
 }

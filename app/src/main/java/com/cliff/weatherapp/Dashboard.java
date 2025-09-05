@@ -120,6 +120,7 @@ public class Dashboard extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == 0x5) {
             // If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0
@@ -130,7 +131,6 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private boolean netAndGpsEnabled(){
-
         boolean isGPS = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         boolean isNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             return (isGPS && isNetwork);
