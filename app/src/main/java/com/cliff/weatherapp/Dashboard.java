@@ -145,7 +145,8 @@ public class Dashboard extends AppCompatActivity {
         lon = Double.toString(myLocation.getLongitude());
         Log.d(TAG, "DAta: " + myLocation);
 
-        String url = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&units=metric&appid=80f3988e0e381340a6afc9c616f390d7";
+        String API_KEY = BuildConfig.API_KEY;
+        String url = "https://api.openweathermap.org/data/2.5/weather?lat="+lat+"&lon="+lon+"&units=metric&appid="+API_KEY;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET,
                 url,

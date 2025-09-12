@@ -13,13 +13,31 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         compileSdkVersion 36
     }
+    buildFeatures {
+        buildConfig = true // Enable BuildConfig generation
+    }
     buildTypes {
+        debug {
+            buildConfigField "String", "API_KEY", getSecret("OPEN_WEATHER_API_KEY")
+        }
         release {
             minifyEnabled false
+            buildConfigField "String", "API_KEY", getSecret("OPEN_WEATHER_API_KEY")
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
     namespace 'com.cliff.weatherapp'
+}
+
+// Function to read secrets from the properties file
+def getSecret(String key) {
+    def secretsFile = rootProject.file("local.properties")
+    if (secretsFile.exists()) {
+        def properties = new Properties()
+        properties.load(new FileInputStream(secretsFile))
+        return properties.getProperty(key, "") // Return empty string if key not found
+    }
+    return "" // Return empty string if file doesn't exist
 }
 
 dependencies {
