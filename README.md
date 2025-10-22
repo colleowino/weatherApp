@@ -1,7 +1,7 @@
 # weatherApp
 Android App that displays current weather in a particular location provided through app GPS
 
-Makes use of Free Code Camps API: https://fcc-weather-api.glitch.me/
+Makes use of [Open Weather Map](https://openweathermap.org/)
 
 **Libraries:** Volley
 
